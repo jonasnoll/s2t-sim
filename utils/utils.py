@@ -22,7 +22,7 @@ def create_directory(dir_path):
         else:
             print("Successfully created the directory %s" % dir_path)
     else:
-        print("Seems like path %s exists." % dir_path)
+        print("Path %s exists." % dir_path)
 
 
 def get_pixel_ranges(dataloader):

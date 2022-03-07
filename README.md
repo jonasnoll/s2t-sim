@@ -2,6 +2,8 @@
 
 ## Install
 
+Python 3.7:
+
 `pip install -r requirements.txt`
 
 ## Data Preperation
@@ -21,7 +23,7 @@ If data is used from other sources, adjust default data paths of the custom data
 
 ## Execution
 
-The entry point to the experimentation pipeline is the main.py, run:
+The entry point to the code and experimentation pipeline is the **main.py**, run:
 
 `python main.py`
 
@@ -42,3 +44,5 @@ If you consider using this code or its derivatives, please consider citing:
   year={2022}
 }
 ```
+
+[1] X. Peng, Q. Bai, X. Xia, Z. Huang, K. Saenko, and B. Wang. Moment matching formulti-source domain adaptation. Proceedings of the IEEE International Conferenceon Computer Vision, pages 1406–1415, 2019.

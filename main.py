@@ -1,5 +1,6 @@
 from opts import parse_opts
 from utils.log import Log
+from utils.utils import create_directory
 from pipeline import S2TFiltering
 
 
@@ -15,7 +16,10 @@ from pipeline import S2TFiltering
 if __name__ == "__main__":
     print("Starting...")
     opts = parse_opts()
+    # Logging
+    create_directory('./logs')
     log = Log(opts.exp_id).log
     log.info("Starting pipeline.py...") 
+    # Pipeline
     s2t = S2TFiltering(opts)
     s2t.run_s2t_filtering()
