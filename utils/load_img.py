@@ -82,8 +82,8 @@ def load_images(dataset_ids_list: list, data_trans="resnet", xy_combined=False, 
 
         # Take subset according to Peng et al. "Moment Matching" source code
         if subset and dataset in ["mnist", "svhn", "mnist-m", "syn", "mt", "sv", "mm", "sy", "mt-twin"]:
-            train = Digit5Subset(train, list(range(1000)))  # TODO change back to 25000
-            test = Digit5Subset(test, list(range(501)))  # TODO change back to 9000
+            train = Digit5Subset(train, list(range(25000)))
+            test = Digit5Subset(test, list(range(9000)))
         if subset and dataset in ["usps", "up"]:
             train = combine_datasets([train, test])
             train.name = "usps"

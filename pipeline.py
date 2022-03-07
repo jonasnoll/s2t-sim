@@ -19,13 +19,11 @@ class S2TFiltering():
         self.experiment_id = opts.exp_id
         self.visible_gpu = opts.gpu
         assert opts.data in ["Digit-5", "DomainNet"], "Data argument must be 'Digit-5' or 'DomainNet'"
-        # self.datasets = ["mnist", "svhn", "mnist-m", "usps", "syn"] if opts.data == "Digit-5" else ['clipart' 'painting', 'real', 'sketch']
-        self.datasets = ["mnist", "svhn"] if opts.data == "Digit-5" else ['clipart' 'painting', 'real', 'sketch']  # TODO: Change here
+        self.datasets = ["mnist", "svhn", "mnist-m", "usps", "syn"] if opts.data == "Digit-5" else ['clipart' 'painting', 'real', 'sketch']
         self.training_model = 'lenet' if opts.data == "Digit-5" else 'resnet18'  # 'resnet50'
         self.opts.model = self.training_model
         self.n_training_runs = opts.n_training_runs
-        # self.subset_sizes = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-        self.subset_sizes = [0.1]  # TODO: Change sss
+        self.subset_sizes = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
         self.in_class_ranking = opts.in_class_ranking
 
         self.random = opts.random
