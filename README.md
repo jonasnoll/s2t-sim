@@ -18,8 +18,7 @@ To download Digit-Five Dataset, reffer to [1] or use the link the authors provid
 
 `https://drive.google.com/open?id=1A4RJOFj4BJkmliiEL7g9WzNIDUHLxfmm`
 
-The MNIST & SVHN datasets are drawn from the pytorch datasts.
-If data is used from other sources, adjust default data paths of the custom datasets in utils/dataset.py.
+The datafiles 'usps.h5', 'syn_number.mat' and 'mnistm_with_label.mat' need to be placed in 'data/digit-5/. Neglect MNIST & SVHN as the datasets are drawn from the pytorch library. If the data files are used from other sources or directories, adjust default data paths of the custom datasets in utils/dataset.py accordingly.
 
 ## Execution
 

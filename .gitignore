@@ -130,4 +130,4 @@ dmypy.json
 
 # s2t-sim
 data/digit-5/
-data/domainnet/
+data/domainnet/multi/

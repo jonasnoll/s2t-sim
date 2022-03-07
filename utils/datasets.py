@@ -49,7 +49,7 @@ class MNISTDataset(Dataset):
 
 
 class SVHNDataset(Dataset):
-    def __init__(self, split, transform=None, path='./data/digit-5/SVHN'):
+    def __init__(self, split, transform=None, path='./data/digit-5'):
         # Load Data here
         assert split == 'train' or split == 'test', "Split should be string 'train' or 'test'"
         self.dataset = torchvision.datasets.SVHN(root=path,
@@ -79,7 +79,7 @@ class SVHNDataset(Dataset):
 
 
 class USPSDataset(Dataset):
-    def __init__(self, split, transform=None, path='./data/digit-5/usps/usps.h5'):
+    def __init__(self, split, transform=None, path='./data/digit-5/usps.h5'):
         # Load Data
         with h5py.File(path, 'r') as hf:
             data = hf.get(split)
@@ -112,7 +112,7 @@ class USPSDataset(Dataset):
 
 
 class SYNDataset(Dataset):
-    def __init__(self, split, transform=None, path='./data/digit-5/synthetic/syn_number.mat'):
+    def __init__(self, split, transform=None, path='./data/digit-5/syn_number.mat'):
         # Load Data
         data = scipy.io.loadmat(path)
         X = data.get(f"{split}_data")
@@ -142,7 +142,7 @@ class SYNDataset(Dataset):
 
 
 class MNISTMDataset(Dataset):
-    def __init__(self, split, transform=None, path='./data/digit-5/mnist-m/mnistm_with_label.mat'):
+    def __init__(self, split, transform=None, path='./data/digit-5/mnistm_with_label.mat'):
         # Load Data
         data = scipy.io.loadmat(path)
         X = data.get(f"{split}")

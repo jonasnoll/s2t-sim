@@ -1,9 +1,11 @@
 from utils.datasets import MNISTDataset, SVHNDataset, USPSDataset, SYNDataset, MNISTMDataset, Digit5Subset
 from utils.datasets import ClipartDataset, PaintingDataset, RealDataset, SketchDataset
+from utils.utils import create_directory
 import torch
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, Subset, ConcatDataset
 import numpy as np
+
 
 
 data_transforms = {
@@ -44,6 +46,7 @@ def load_images(dataset_ids_list: list, data_trans="resnet", xy_combined=False, 
 
     assert isinstance(dataset_ids_list, list), 'dataset_ids_list is not type list'
     assert data_trans in ["lenet", "resnet", "resnet18", "resnet50"], 'Data Transform should be one of "lenet", "resnet", "resnet18", "resnet50"'
+    create_directory('./data/digit-5')
 
     transform_images = 'resnet' if data_trans in ["resnet18", "resnet50"] else data_trans
 
