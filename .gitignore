@@ -129,6 +129,5 @@ dmypy.json
 .pyre/
 
 # s2t-sim
-data/
-results/
-logs/
+data/digit-5/
+data/domainnet/

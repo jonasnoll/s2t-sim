@@ -3,8 +3,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
 
-# LeNet
-
 
 class LeNetModel(nn.Module):
     def __init__(self, num_classes):
@@ -82,7 +80,6 @@ class BaseAutoencoder(nn.Module):
             nn.ReLU(),
             nn.ConvTranspose2d(16, input_channels, 3, stride=2, padding=1, output_padding=1),  # N, 1, 28, 28  (N,1,27,27)
             nn.Sigmoid()  # Final value between 0 and 1
-            # nn.Tanh() # Final value between -1 and 1
         )
 
     def forward(self, x):

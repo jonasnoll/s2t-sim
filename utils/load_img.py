@@ -1,7 +1,5 @@
-# from sklearn import datasets
-from utils.datasets import MNISTDataset, SVHNDataset, USPSDataset, SYNDataset, MNISTMDataset
+from utils.datasets import MNISTDataset, SVHNDataset, USPSDataset, SYNDataset, MNISTMDataset, Digit5Subset
 from utils.datasets import ClipartDataset, PaintingDataset, RealDataset, SketchDataset
-from utils.datasets import Digit5Subset
 import torch
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, Subset, ConcatDataset
@@ -24,22 +22,36 @@ data_transforms = {
 
 
 def load_images(dataset_ids_list: list, data_trans="resnet", xy_combined=False, subset=True):
-    assert isinstance(dataset_ids_list,
-                      list), 'dataset_ids_list is not type list'
-    assert data_trans in ["lenet", "resnet", "resnet18",
-                          "resnet50"], 'Data Transform should be one of "lenet", "resnet", "resnet18", "resnet50"'
-    if data_trans in ["resnet18", "resnet50"]:
-        data_trans = 'resnet'
+    """Load image datasets.
 
-    transform_images = data_trans
+    Loads images datasets according to ids given. Can be combinations of 
+    ["mnist", "svhn", "mnist-m", "usps", "syn"] or ['clipart' 'painting', 
+    'real', 'sketch']. Transforms the data to comply with resnet- or lenet-
+    network archtecure. 
+
+    Args:
+        dataset_ids_list (list): ids of what datasets to load
+        data_trans (torchvision.transforms): how the data is transformed when
+            loaded (default is "resnet") 
+        xy_combined (bool): whether train and test data should be combined to 
+            one dataset if possible (default is False)
+        subset (bool): whether Digit-5 subsets should be taken according to
+            literature benchmarks
+
+    Returns:
+        touple: touple of train and test datasets
+    """
+
+    assert isinstance(dataset_ids_list, list), 'dataset_ids_list is not type list'
+    assert data_trans in ["lenet", "resnet", "resnet18", "resnet50"], 'Data Transform should be one of "lenet", "resnet", "resnet18", "resnet50"'
+
+    transform_images = 'resnet' if data_trans in ["resnet18", "resnet50"] else data_trans
 
     train_data = []
     test_data = []
-    print(f"Loading Dataset: {dataset_ids_list}")
     for dataset in dataset_ids_list:
         ### DIGIT 5 ###
         if dataset == "mnist" or dataset == "mt":
-            print("MNSIT")
             train = MNISTDataset(
                 split='train', transform=data_transforms.get(transform_images, None))
             test = MNISTDataset(
@@ -65,11 +77,10 @@ def load_images(dataset_ids_list: list, data_trans="resnet", xy_combined=False, 
             test = MNISTMDataset(
                 split="test", transform=data_transforms.get(transform_images, None))
 
-        # Take subset according to Peng et al. "Moment Matching"
+        # Take subset according to Peng et al. "Moment Matching" source code
         if subset and dataset in ["mnist", "svhn", "mnist-m", "syn", "mt", "sv", "mm", "sy", "mt-twin"]:
-            train = Digit5Subset(train, list(range(25000)))
-            test = Digit5Subset(test, list(range(9000)))
-
+            train = Digit5Subset(train, list(range(1000)))  # TODO change back to 25000
+            test = Digit5Subset(test, list(range(501)))  # TODO change back to 9000
         if subset and dataset in ["usps", "up"]:
             train = combine_datasets([train, test])
             train.name = "usps"
@@ -95,15 +106,14 @@ def load_images(dataset_ids_list: list, data_trans="resnet", xy_combined=False, 
 
         # Info on loaded data
         n_test = len(test) if test else 0
-        print(
-            f"Loaded {dataset} ({transform_images}): train {len(train)}; test {n_test}")
+        print(f"Loaded {dataset} ({transform_images}): train {len(train)}; test {n_test}")
 
         # Combine x and y data
         if xy_combined:
             train = combine_datasets([train, test])
             test = None
 
-        # Append train and test together
+        # Append train datasets/test datasets together
         train_data.append(train)
         if test:
             test_data.append(test)
@@ -115,22 +125,36 @@ def load_images(dataset_ids_list: list, data_trans="resnet", xy_combined=False, 
     return train_dataset, test_dataset
 
 
-def combine_datasets(datasets):
+def combine_datasets(datasets: list):
+    """Combine list of datasets to one dataset.
+
+    Args:
+        datasets (list): list of datasets
+
+    Returns:
+        torch.utils.data.Dataset: dataset
+    """
     if len(datasets) == 1:
         return datasets[0]
     else:
         datasets = [ds for ds in datasets if ds is not None]
-        # Make sure they all have integer targets and same shape
-        # if not all([ds[0][0].shape == datasets[0][0][0].shape for ds in datasets]) or not all([(isinstance(ds[0][1], int) or isinstance(ds[0][1], np.int64)) for ds in datasets]):
-        #     raise ValueError(
-        #         "Dataset imgs have missmatching shape or target type")
-
         combined_dataset = ConcatDataset(datasets)
 
         return combined_dataset
 
 
 def get_dataset_origins(datasets):
+    """Generate list of source origins for list of datasets.
+
+    Generated for logging reasons and traceability of generated 
+    subsets.
+
+    Args:
+        datasets (list): list of datasets
+
+    Returns:
+        numpy.ndarray): array of dataset names with length of combined datasets
+    """
     datasets = [ds for ds in datasets if ds is not None]
 
     origins_list = []

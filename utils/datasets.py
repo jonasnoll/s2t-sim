@@ -9,9 +9,9 @@ import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, Subset
 
-# Adapt DomainNet for reasonable class sizes
+# Adapted DomainNet for reasonable class sizes >= 200, left:
 domain_net_targets = ['sea_turtle', 'swan', 'zebra', 'submarine', 'saxophone', 'bird',
-                      'squirrel', 'teapot', 'tiger', 'flower', 'streetlight', 'whale', 'feather']  # >= 200
+                      'squirrel', 'teapot', 'tiger', 'flower', 'streetlight', 'whale', 'feather']
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -34,7 +34,6 @@ class MNISTDataset(Dataset):
 
     def show_image(self, idx):
         img, label = self.dataset[idx]
-        # print(self.label_map.get(str(label)))
         return img
 
     def __getitem__(self, idx):
@@ -98,7 +97,6 @@ class USPSDataset(Dataset):
 
     def show_image(self, idx):
         img, label = self.X[idx], self.targets[idx]
-        # print(self.label_map.get(str(label)))
         return img
 
     def __getitem__(self, idx):
@@ -120,7 +118,6 @@ class SYNDataset(Dataset):
         X = data.get(f"{split}_data")
         y = data.get(f"{split}_label")
 
-        #self.X = [Image.fromarray(img, mode="RGB").convert("L") for img in X]
         self.X = [Image.fromarray(img, mode="RGB") for img in X]
         self.targets = np.array([int(label[0]) for label in y])
         self.classes = np.unique(self.targets)
@@ -151,7 +148,6 @@ class MNISTMDataset(Dataset):
         X = data.get(f"{split}")
         y = data.get(f"label_{split}")
 
-        #self.X = [Image.fromarray(img, mode="RGB").convert("L") for img in X]
         self.X = [Image.fromarray(img, mode="RGB") for img in X]
         self.targets = np.array(
             [int(np.where(labelmap == 1)[0][0]) for labelmap in y])
@@ -223,7 +219,6 @@ class ClipartDataset(Dataset):
 
     def show_image(self, idx):
         img, label = self.X[idx], self.targets[idx]
-        # img = Image.open(image_path)
         print(self.label_map.get(str(label)))
         return img
 
@@ -269,7 +264,6 @@ class PaintingDataset(Dataset):
 
     def show_image(self, idx):
         img, label = self.X[idx], self.targets[idx]
-        # img = Image.open(image_path)
         print(self.label_map.get(str(label)))
         return img
 
@@ -315,7 +309,6 @@ class RealDataset(Dataset):
 
     def show_image(self, idx):
         img, label = self.X[idx], self.targets[idx]
-        # img = Image.open(image_path)
         print(self.label_map.get(str(label)))
         return img
 
@@ -361,7 +354,6 @@ class SketchDataset(Dataset):
 
     def show_image(self, idx):
         img, label = self.X[idx], self.targets[idx]
-        # img = Image.open(image_path)
         print(self.label_map.get(str(label)))
         return img
 

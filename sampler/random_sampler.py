@@ -13,6 +13,16 @@ class RandomSampler():
         # # this.input_data = None
 
     def get_random_subset(self, input_ds, subset_size, ds_origins=None):
+        """Returns subset of given size with randomly chosen samples.
+
+        Args: 
+            input_ds (torch.utils.data.Dataset): Dataset to sample
+            subset_size (float): Percentage of how much to take from dataset
+            ds_origins (numpy.ndarray): array of source origins of samples
+
+        Returns:  
+            torch.utils.data.Dataset: randomly sampled subset
+        """
         if not isinstance(input_ds, Dataset):
             raise TypeError("input_ds is not type torch.utils.data.Dataset")
 
@@ -32,13 +42,13 @@ class RandomSampler():
             self.log.info(
                 f"Random Subet for {subset_size:<4} of {len(input_ds)} imgs -> {len(subset_ds)} imgs")
 
-        # Print Origin Dataset Distribution
+        # Origin Dataset Distribution
         try:
             origin_dist = get_unique_counts(ds_origins[r_idx])
-            print(f"Orgin Dataset Distribution: {origin_dist}")
             if self.log:
                 self.log.info(f"Orgin Dataset Distribution: {origin_dist}")
         except:
-            print("No Orgin Dataset Distribution available")
+            if self.log:
+                self.log.info("No Orgin Dataset Distribution available")
 
         return subset_ds

@@ -1,18 +1,9 @@
-import json
-import time
-import numpy as np
-# import cv2
 import os
-import scipy.io
+import json
+import numpy as np
 import torch
 import torchvision
-import gzip
-import h5py
-import glob
-import sys
-import logging
 from random import Random
-# from matplotlib import pyplot as plt
 from utils.datasets import Digit5Subset
 
 
@@ -35,6 +26,14 @@ def create_directory(dir_path):
 
 
 def get_pixel_ranges(dataloader):
+    """Get min and max values of dataloader.
+
+    Args: 
+        dataloader (torch.utils.data.DataLoader / 
+            torch.utils.data.dataset.Dataset): subject to get ranges from
+    Returns:
+        touple: min and max values of subject
+    """
     if isinstance(dataloader, torch.utils.data.dataset.Dataset):
         dataloader = torch.utils.data.DataLoader(
             dataloader, batch_size=128, shuffle=False, num_workers=0)
@@ -48,58 +47,33 @@ def get_pixel_ranges(dataloader):
     return pix_range
 
 
-def combine_datasets(datasets):
-    combined_dataset = np.concatenate(datasets, axis=0)
-
-    return combined_dataset
-
-
-# def plot_histogram(distribution, title="Histogram", print_frequencies=True):
-#     (unique, counts) = np.unique(distribution, return_counts=True)
-#     frequencies = np.asarray((unique, counts)).T
-#     if print_frequencies:
-#         for label, freq in frequencies:
-#             print(f"{label} : {freq}")
-
-#     plt.hist(distribution, bins=[0, 1, 2, 3, 4, 5,
-#                                  6, 7, 8, 9, 10], rwidth=0.5, align='left')
-#     plt.title(title)
-#     plt.show()
-
-
-# def plot_dists(distributions):
-#     fig = plt.figure(figsize=(4, 2))
-#     ax = fig.add_axes([0,0,1,1])
-#     categories = [str(i) for i in range(10)]
-#     ax.bar(categories, distributions)
-#     plt.show()
-
-# def plot_dists(distributions):
-#     x = []
-#     y = []
-#     for k, v in distributions.items():
-#         x.append(str(k))
-#         y.append(int(v))
-
-#     plt.bar(x, y)
-#     plt.show()
-
-
 def save_as_txt(data, filepath):
     with open(filepath, "w") as text_file:
         text_file.write(data)
 
 
 def save_as_json(data, filepath):
-    # print("Saving as ", filepath)
     with open(filepath, 'w') as fp:
         json.dump(data, fp, indent=4)
 
 
 def get_items_idx_of_max_segment(segment_size, distance_measure_list):
-    """Returns a list of indices for the highest values within a list."""
+    """Returns a list of indices for the highest values within a list.
+
+    This is done to realize the image ranking in combination with 
+    the subset generation. Indices are used to create the 
+    subset from the datasets.
+
+    Args: 
+        segment_size (float): percentage of how much to take (how large 
+            the segment size should be)
+
+    Returns: 
+        numpay.ndarray: list of indices that belong to segment
+    """
     amount_to_take = int(len(distance_measure_list)*segment_size)
     try:
+        # Check if more is asked then available
         if amount_to_take >= len(distance_measure_list):
             return np.array(range(len(distance_measure_list)))
         else:
@@ -113,6 +87,20 @@ def get_items_idx_of_max_segment(segment_size, distance_measure_list):
 
 
 def get_n_idx_of_max_segment(n, distance_measure_list):
+    """Returns a list of indices for the highest values within a list.
+
+    This is done to realize the image ranking in combination with 
+    the subset generation. Indices are used to create the 
+    subset from the datasets.
+
+    Args: 
+        n (int): amount of how much to take (how large 
+            the segment size should be)
+        distance_measure_list (list / numpy.ndarray): list of image similarity measures
+            to perform ranking with
+    Returns: 
+        numpay.ndarray: list of indices that belong to segment
+    """
     amount_to_take = n
     try:
         if amount_to_take >= len(distance_measure_list):
@@ -120,8 +108,7 @@ def get_n_idx_of_max_segment(n, distance_measure_list):
         else:
             if amount_to_take == 0:
                 amount_to_take = 1
-            idx_max_segment = np.argpartition(
-                distance_measure_list, -amount_to_take)[-amount_to_take:]
+            idx_max_segment = np.argpartition(distance_measure_list, -amount_to_take)[-amount_to_take:]
     except:
         idx_max_segment = np.array(range(len(distance_measure_list)))
 
@@ -129,7 +116,21 @@ def get_n_idx_of_max_segment(n, distance_measure_list):
 
 
 def get_items_idx_of_min_segment(segment_size, distance_measure_list):
-    """Returns a list of indices for the lowest values within a list."""
+    """Returns a list of indices for the lowest values within a list.
+
+    This is done to realize the image ranking in combination with 
+    the subset generation. Indices are used to create the 
+    subset from the datasets.
+
+    Args: 
+        segment_size (float): percentage of how much to take (how large 
+            the segment size should be)
+        distance_measure_list (list / numpy.ndarray): list of image similarity measures
+            to perform ranking with
+
+    Returns: 
+        numpay.ndarray: list of indices that belong to segment
+    """
     amount_to_take = int(len(distance_measure_list)*segment_size)
     try:
         if amount_to_take >= len(distance_measure_list):
@@ -143,6 +144,20 @@ def get_items_idx_of_min_segment(segment_size, distance_measure_list):
 
 
 def get_n_idx_of_min_segment(n, distance_measure_list):
+    """Returns a list of indices for the highest values within a list.
+
+    This is done to realize the image ranking in combination with 
+    the subset generation. Indices are used to create the 
+    subset from the datasets.
+
+    Args: 
+        n (int): amount of how much to take (how large 
+            the segment size should be)
+        distance_measure_list (list / numpy.ndarray): list of image similarity measures
+            to perform ranking with
+    Returns: 
+        numpay.ndarray: list of indices that belong to segment
+    """
     amount_to_take = n
     try:
         if amount_to_take >= len(distance_measure_list):
@@ -153,13 +168,11 @@ def get_n_idx_of_min_segment(n, distance_measure_list):
     except:
         idx_min_segment = np.array(range(len(distance_measure_list)))
 
-    # idx_min_segment = np.argpartition(distance_measure_list, amount_to_take)[:amount_to_take]
-
     return idx_min_segment
 
 
 def get_ds_targets(dataset):
-    # Get target array from any dataset (custom, concat or subset)
+    """Get target array from any dataset (custom, concat or subset)"""
     if hasattr(dataset, 'targets'):
         targets = dataset.targets
     elif hasattr(dataset, 'labels'):
@@ -174,8 +187,10 @@ def get_ds_targets(dataset):
 
 
 def get_unique_labels(dataset):
-    # get uniqe labels from any dataset
-    # if type custom dataset acessed via .classes attribute
+    """Get uniqe labels from any dataset.
+
+    If type custom dataset acessed via .classes attribute.
+    """
     targets = get_ds_targets(dataset)
     unique = np.unique(targets)
 
@@ -183,7 +198,7 @@ def get_unique_labels(dataset):
 
 
 def get_label_dist(dataset):
-    # get distribution of labels in dataset
+    """Get distribution of labels in dataset"""
     targets = get_ds_targets(dataset)
     unique, counts = np.unique(targets, return_counts=True)
     target_dist = dict(zip(unique.astype('str'), counts))
@@ -192,7 +207,7 @@ def get_label_dist(dataset):
 
 
 def get_unique_counts(ls):
-    # get distribution of elements in any list
+    """Get distribution of any elements in any list"""
     unique, counts = np.unique(ls, return_counts=True)
     dist = dict(zip(unique, counts))
 
@@ -200,7 +215,7 @@ def get_unique_counts(ls):
 
 
 def get_label_idx_map(dataset):
-    # Get map what indices of the dataset belong to what label
+    """Get map (dict) what indices of the dataset belong to what label"""
     ds_targets = get_ds_targets(dataset)
     u_labels = get_unique_labels(dataset)
     label_idx_map = {}
@@ -212,7 +227,21 @@ def get_label_idx_map(dataset):
 
 
 def get_norm_subset_idx(dataset, subset_size, distance_measure_list, segment='max'):
-    """Takes a dataset and samples all classes equally according to distance measure list for the dataset"""
+    """Return list of indices so classes are qually distributed
+
+    Done to realize in-class ranking method. Takes a dataset and 
+    samples all classes equally according to distance measure list for the dataset.
+
+    Args:
+        dataset (asdf): dataset containing images and labels
+        segment_size (float): percentage of how much to take (how large 
+            the segment size should be)
+        distance_measure_list (list / numpy.ndarray): list of image similarity measures
+            to perform ranking with
+    Returns: 
+        numpay.ndarray: list of indices that belong to needed segment AND 
+            are equally distributed
+    """
     assert segment == 'max' or segment == 'min', "Segment must be str 'max' or 'min'"
     distance_measure_list = distance_measure_list if isinstance(
         distance_measure_list, np.ndarray) else np.array(distance_measure_list)
@@ -233,12 +262,6 @@ def get_norm_subset_idx(dataset, subset_size, distance_measure_list, segment='ma
                 n_class_samples_map[l] = n_class_samples_map[l] + 1
                 subset_amount = subset_amount - 1
 
-    # Plot theoretical Distribution
-    # x = [str(k) for k, _ in n_class_samples_map.items()]
-    # y = [int(v) for _, v in n_class_samples_map.items()]
-    # plt.bar(x, y)
-    # plt.show()
-
     sample_idx = []
     for l in u_labels:
         # Get distance measure values for current label
@@ -246,22 +269,19 @@ def get_norm_subset_idx(dataset, subset_size, distance_measure_list, segment='ma
         # Get highest or lowest segment indices for current label
         # Use the amount for each class which was calculated in n_class_samples_map
         if segment == 'max':
-            l_segment_idx = get_n_idx_of_max_segment(
-                n_class_samples_map[l], l_dist)
+            l_segment_idx = get_n_idx_of_max_segment(n_class_samples_map[l], l_dist)
         elif segment == 'min':
-            l_segment_idx = get_n_idx_of_min_segment(
-                n_class_samples_map[l], l_dist)
+            l_segment_idx = get_n_idx_of_min_segment(n_class_samples_map[l], l_dist)
         # Use sample indices at label to get dataset indices from label map
         l_sample_idx = label_idx_map[l][l_segment_idx]
         # Concat into one idx list
-        sample_idx = np.concatenate(
-            [sample_idx, l_sample_idx], axis=None).astype(int)
+        sample_idx = np.concatenate([sample_idx, l_sample_idx], axis=None).astype(int)
 
     return sample_idx
 
 
 def get_random_idx(dataset, n_samples, seed=10):
-    # For Testing Purposes, take random n images from target for comparison
+    """Take random n images from target for comparison"""
     n = n_samples
     if len(dataset) < n:
         n = len(dataset)
@@ -275,6 +295,7 @@ def get_random_idx(dataset, n_samples, seed=10):
 
 
 def change_ds_labels(ds, trgt):
+    """Recursive algorithm to change all dataset labels to one target integer"""
     if hasattr(ds, 'targets'):
         ds.targets = torch.tensor([trgt for _ in range(len(ds.targets))])
     if hasattr(ds, 'labels'):
@@ -288,6 +309,11 @@ def change_ds_labels(ds, trgt):
 
 
 def change_ds_transform(ds, transform):
+    """Recursive algorithm to change data transforms for all dataset origins
+
+    Because differnt wrappers of torch.utils.data.dataset.ConcatDataset do not inherit
+    .transform(s) attribute.
+    """
     if hasattr(ds, 'transform'):
         assert isinstance(
             transform, torchvision.transforms.transforms.Compose), "Transform is not of type 'torchvision.transforms.transforms.Compose'"
@@ -298,7 +324,6 @@ def change_ds_transform(ds, transform):
             change_ds_transform(sub_ds, transform)
 
     elif isinstance(ds, torch.utils.data.dataset.Subset) or isinstance(ds, Digit5Subset):
-        # for i, sub_ds in enumerate(ds.dataset):
         change_ds_transform(ds.dataset, transform)
 
     return ds

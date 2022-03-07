@@ -3,6 +3,7 @@ import logging
 
 
 class Log():
+    """Logging class for reusability in all modules"""
     def __init__(self, log_id):
         ##### Logging #####
         self.log = logging.getLogger(__name__)
@@ -13,9 +14,6 @@ class Log():
                             level=logging.DEBUG)
 
         def handle_exception(exc_type, exc_value, exc_traceback):
-            # if issubclass(exc_type, KeyboardInterrupt):
-            #     sys.__excepthook__(exc_type, exc_value, exc_traceback)
-            #     return
             self.log.error("Uncaught exception", exc_info=(
                 exc_type, exc_value, exc_traceback))
 

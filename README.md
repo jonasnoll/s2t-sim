@@ -1,6 +1,4 @@
-# s2t-sim
-
-Source to Target Similarity Filtering for Unsupervised Domain Adaptation
+# s2t-sim: Source to Target Similarity Filtering for Unsupervised Domain Adaptation
 
 ## Install
 
@@ -12,11 +10,26 @@ To download DomainNet Data run:
 
 `data/domainnet/download_data.sh`
 
+The datafiles used for experimentation are stored in the \_img.txt files in 'data/domainnet/txt/' and utilized in the utils/dataset.py.
+
 To download Digit-Five Dataset, reffer to [1] or use the link the authors provided:
 
 `https://drive.google.com/open?id=1A4RJOFj4BJkmliiEL7g9WzNIDUHLxfmm`
 
-The datafiles used are stored in the \_img.txt files in 'data/domainnet/txt/' and utilized in the utils/dataset.py
+The MNIST & SVHN datasets are drawn from the pytorch datasts.
+If data is used from other sources, adjust default data paths of the custom datasets in utils/dataset.py.
+
+## Execution
+
+The entry point to the experimentation pipeline is the main.py, run:
+
+`python main.py`
+
+Arguments are parsed in the opts.py file and can be adjusted either within the file or by passing arguments to the execution command.
+
+## Results
+
+Modeling results for the different sampling mehtods 'random', 'ssim', 'feature distance' and 'autoencoder loss' are stored under results/ and hold the experiment id (--exp_id) as a filename. Likewise, logs are saved under logs/.
 
 ### Reference
 
