@@ -1,9 +1,12 @@
+from utils.utils import change_ds_transform, get_unique_counts
+from sampler.ranking import get_items_idx_of_min_segment, get_norm_subset_idx
 from utils.log import Log
 from modeling.autoencoder import Autoencoder
-from utils.utils import get_items_idx_of_min_segment, change_ds_transform, get_unique_counts, get_norm_subset_idx
+# from utils.utils import get_items_idx_of_min_segment, change_ds_transform, get_unique_counts, get_norm_subset_idx
 from torch.utils.data import Dataset, Subset
 from torchvision import transforms
 import copy
+
 
 
 class AutoencoderSampler():

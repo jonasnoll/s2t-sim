@@ -1,6 +1,6 @@
 from modeling.models import BaseAutoencoder
 from utils.log import Log
-from utils.utils import timer
+from utils.utils import create_directory, timer
 import torch
 import torch.nn as nn
 from torchvision.utils import save_image
@@ -104,6 +104,7 @@ class Autoencoder():
 
         if save_imgs:
             path = './results/img'
+            create_directory(path)
             save_image(torch.cat(imgs), f'{path}/32_autoencder_original.png')
             save_image(torch.cat(recons), f'{path}/32_autoencder_recon.png')
 

@@ -1,4 +1,5 @@
-from utils.utils import change_ds_transform, timer, get_items_idx_of_max_segment, get_label_dist, get_unique_counts, get_random_idx, get_ds_targets, get_norm_subset_idx
+from utils.utils import change_ds_transform, get_label_dist, get_random_idx, get_unique_counts, timer
+from sampler.ranking import get_items_idx_of_max_segment, get_norm_subset_idx
 from utils.log import Log
 import math
 import time
@@ -8,6 +9,8 @@ import torchvision.transforms as transforms
 import torch
 from torch.utils.data import Dataset, Subset
 from skimage.metrics import structural_similarity as ssim
+
+
 
 
 class SSIMSampler():
